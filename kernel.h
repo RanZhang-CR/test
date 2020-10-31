@@ -1,11 +1,11 @@
 #include "immintrin.h"
 
 void inline kernel(
-    double* x;
-    double* a;
-    double* r;
+    double* x,    //data set
+    double* a,    //test point
+    double* r,
 
-    int D;    // dimension size
+    int D    // dimension size  
 ){
     __m256d smd8 = _mm256_setzero_pd();
     __m256d smd9 = _mm256_setzero_pd();
