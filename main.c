@@ -40,7 +40,7 @@ int main(){
   int kernel_size  = 28 ;
 
 
-  int x_size = kernel_size * 20;     //number of data set points (arbitrary, can be changed)
+  int x_size = kernel_size * 40;     //number of data set points (arbitrary, can be changed)
   int a_size = 20;                   //number of test points (arbitrary, can be changed)
   
   int x_jump_size  = 28;  //x_jump_size is the number need to be jumped each time when calling kernel
@@ -120,7 +120,7 @@ int main(){
     int correct = 1;
     // for (int i = 0; i != m * n; ++i)
     //   correct &= (fabs(c[i] - c_check[i]) < 1e-12);
-    printf("cycles consuming %lf\t%d, dimenssion: %d\n", (a_size*x_size*5*k)/((double)(sum/(1.0*RUNS))), correct, k);
+    printf("cycles consuming %lf\t%d, dimenssion: %d\n", (a_size*x_size*3*k)/((double)(sum/(1.0*RUNS))), correct, k);
     
     free(x);
     free(a);
