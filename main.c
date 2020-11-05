@@ -6,7 +6,7 @@
 
 #include "kernel.h"
 
-#define RUNS 1
+#define RUNS 2000
 
 //timing routine for reading the time stamp counter
 static __inline__ unsigned long long rdtsc(void) {
@@ -120,7 +120,7 @@ int main(){
     int correct = 1;
     // for (int i = 0; i != m * n; ++i)
     //   correct &= (fabs(c[i] - c_check[i]) < 1e-12);
-    printf(" %lf\t%d\n", (2.0*a_size*x_size*3*k)/((double)(sum/(1.0*RUNS))), correct);
+    printf(" %lf\t%d\n", (a_size*x_size*5*k)/((double)(sum/(1.0*RUNS))), correct);
     
     free(x);
     free(a);
