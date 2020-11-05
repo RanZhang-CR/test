@@ -7,6 +7,7 @@ void inline kernel(
 
     int D    // dimension size  
 ){
+
     __m256d smd8 = _mm256_setzero_pd();
     __m256d smd9 = _mm256_setzero_pd();
     __m256d smd10 = _mm256_setzero_pd();
@@ -55,6 +56,7 @@ void inline kernel(
         smd14 = _mm256_fmadd_pd(smd7, smd7, smd14);
     }
 
+    //_mm256_extract_ps  to pull out the data
 
     // store 28 distances
     _mm256_storeu_pd(r, smd8);

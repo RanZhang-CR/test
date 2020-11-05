@@ -116,12 +116,12 @@ int main(){
       int t1 = rdtsc();
       sum += (t1 - t0);
     }
-    /*
+    
     int correct = 1;
-    for (int i = 0; i != m * n; ++i)
-      correct &= (fabs(c[i] - c_check[i]) < 1e-12);
-    printf(" %lf\t%d\n", (2.0*mc*n*k)/((double)(sum/(1.0*RUNS))), correct);
-    */
+    // for (int i = 0; i != m * n; ++i)
+    //   correct &= (fabs(c[i] - c_check[i]) < 1e-12);
+    printf(" %lf\t%d\n", (2.0*a_size*x_size*3*k)/((double)(sum/(1.0*RUNS))), correct);
+    
     free(x);
     free(a);
     free(r);
