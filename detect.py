@@ -20,6 +20,7 @@ from torch.autograd import Variable
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.ticker import NullLocator
+import cv2
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -70,7 +71,12 @@ if __name__ == "__main__":
     prev_time = time.time()
     for batch_i, (img_paths, input_imgs) in enumerate(dataloader):
         # Configure input
-        input_imgs = Variable(input_imgs.type(Tensor))
+        # print(input_imgs.shape)
+        # print(input_imgs)
+        # print(torch.cat((input_imgs,input_imgs,input_imgs),dim=0).shape)
+        fimgs = torch.cat((input_imgs,input_imgs,input_imgs),dim=0)
+        timgs = torch.cat((fimgs,fimgs,fimgs),dim=1)
+        input_imgs = Variable(timgs.type(Tensor))
 
         # Get detections
         with torch.no_grad():
@@ -92,6 +98,16 @@ if __name__ == "__main__":
     colors = [cmap(i) for i in np.linspace(0, 1, 20)]
 
     print("\nSaving images:")
+
+    # set a list to save all the person detection numbers
+    # count the person numbers in each image
+    # each element is a ["file name", count]
+    person_count_list = []
+
+    # record all the bbox for person in this image
+    # [ [file name, [[x1,y1,box_w,box_h], [x1,y1,box_w,box_h]...], [[file name, [box][box]......] ......]
+    all_person_bbox_list = []
+
     # Iterate through images and save plot of detections
     for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
 
@@ -103,6 +119,14 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(1)
         ax.imshow(img)
 
+        # count the person number in this image
+        # [[file name, count], [file name, count], ......[file name, count]]
+        person_count = 0
+
+        # record all the bbox for person in this image
+        # [[x1,y1,box_w,box_h], [x1,y1,box_w,box_h] ......]
+        person_bbox_list = []
+
         # Draw bounding boxes and labels of detections
         if detections is not None:
             # Rescale boxes to original image
@@ -113,9 +137,17 @@ if __name__ == "__main__":
             for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
 
                 print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
+                # print(int(cls_pred))
 
                 box_w = x2 - x1
                 box_h = y2 - y1
+
+                # cls_pred == 0 represent person
+                if int(cls_pred) == 0:
+                    person_count += 1
+
+                    person_bbox = [x1, y1, box_w, box_h]
+                    person_bbox_list.append(person_bbox)
 
                 color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
                 # Create a Rectangle patch
@@ -139,3 +171,27 @@ if __name__ == "__main__":
         filename = path.split("/")[-1].split(".")[0]
         plt.savefig(f"output/{filename}.png", bbox_inches="tight", pad_inches=0.0)
         plt.close()
+
+        this_image_count = [filename, person_count]
+        person_count_list.append(this_image_count)
+
+        person_bbox_list.insert(0, filename)
+        all_person_bbox_list.append(person_bbox_list)
+
+    # write the person count for each image into person_count.txt
+    with open("person_count.txt", "w") as OutFile:
+        for item in person_count_list:
+            OutFile.write(item[0] + "\t" + str(item[1]) + "\n")
+        OutFile.close()
+
+    # write the person boxes for each image into person_boxes.txt
+    with open("person_boxes.txt", "w") as OutFile:
+        for item in all_person_bbox_list:
+            OutFile.write(item[0] + "\t")
+            for i in range(len(item) - 1):
+                OutFile.write(str(item[i + 1][0]) + "\t"
+                              + str(item[i+1][1]) +"\t"
+                              +str(item[i+1][2])+"\t"
+                              +str(item[i+1][3])+"\t")
+            OutFile.write("\n")
+        OutFile.close()
