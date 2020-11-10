@@ -175,8 +175,9 @@ if __name__ == "__main__":
         this_image_count = [filename, person_count]
         person_count_list.append(this_image_count)
 
-        person_bbox_list.insert(0, filename)
-        all_person_bbox_list.append(person_bbox_list)
+        if person_count > 0:
+            person_bbox_list.insert(0, filename)
+            all_person_bbox_list.append(person_bbox_list)
 
     # write the person count for each image into person_count.txt
     with open("person_count.txt", "w") as OutFile:
