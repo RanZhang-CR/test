@@ -71,11 +71,11 @@ if __name__ == "__main__":
     prev_time = time.time()
     for batch_i, (img_paths, input_imgs) in enumerate(dataloader):
         # Configure input
-        # print(input_imgs.shape)
-        # print(input_imgs)
-        # print(torch.cat((input_imgs,input_imgs,input_imgs),dim=0).shape)
-        fimgs = torch.cat((input_imgs,input_imgs,input_imgs),dim=0)
-        timgs = torch.cat((fimgs,fimgs,fimgs),dim=1)
+        # preprocess the thermal image which is gray picture
+        # initially just generally broadcast the 1 channel in gray to 3 channel in RGB
+        # such that it can be applied on the YOLOv3 model which was trained on RGB COCO dataset
+        fimgs = torch.cat((input_imgs, input_imgs, input_imgs), dim=0)
+        timgs = torch.cat((fimgs, fimgs, fimgs), dim=1)
         input_imgs = Variable(timgs.type(Tensor))
 
         # Get detections
