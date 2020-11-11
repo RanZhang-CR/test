@@ -11,9 +11,8 @@ A minimal PyTorch implementation of YOLOv3, with support for training, inference
     $ cd weights/
     $ bash download_weights.sh
 
-##### Download COCO
-    $ cd data/
-    $ bash get_coco_dataset.sh
+##### Download FLIR
+    we just clone the dataset from https://www.flir.com/oem/adas/adas-dataset-agree/ to our own google drive and use it from colab
     
 
 ## Inference
@@ -22,10 +21,7 @@ A minimal PyTorch implementation of YOLOv3, with support for training, inference
     (the path should be your own data set path)
     (we just clone the dataset from https://www.flir.com/oem/adas/adas-dataset-agree/ to our own google drive and use it from colab)
 
-<p align="center"><img src="assets/giraffe.png" width="480"\></p>
-<p align="center"><img src="assets/dog.png" width="480"\></p>
-<p align="center"><img src="assets/traffic.png" width="480"\></p>
-<p align="center"><img src="assets/messi.png" width="480"\></p>
+
 
 ## Train
 ```
