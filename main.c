@@ -20,6 +20,7 @@ int main(){
   //[x1,x2,x3,x4...x28,y1,y2,y3,y4....y28, ..... , final_dimension1,final_dimension2,...final_dimension28]
   double *x;   
  
+  double *leastKvalue;
   //test points
   //[a1,b1,c1, ..., final_dimension1, a2, b2,c2, ... final_dimension2, ..., ]    
   double *a;      
@@ -39,7 +40,7 @@ int main(){
 
   int kernel_size  = 28 ;
 
-
+  int k = 3;  
   int x_size = kernel_size * 40;     //number of data set points (arbitrary, can be changed)
   int a_size = 20;                   //number of test points (arbitrary, can be changed)
   
@@ -47,36 +48,30 @@ int main(){
 
  
   
-  for ( int k = starting_dimension ; k <= ending_dimension ;k++){
+  for ( int dim = starting_dimension ; dim <= ending_dimension ;dim++){
 
-    posix_memalign((void**) &x, 64, x_size * k * sizeof(double));
-    posix_memalign((void**) &a, 64, a_size * k * sizeof(double));
+    posix_memalign((void**) &x, 64, x_size * dim * sizeof(double));
+    posix_memalign((void**) &a, 64, a_size * dim * sizeof(double));
     posix_memalign((void**) &r, 64, a_size * x_size * sizeof(double));
     posix_memalign((void**) &l, 64, x_size * sizeof(bool));
     posix_memalign((void**) &test_l, 64, a_size * sizeof(bool));
-    
+    posix_memalign((void**) &leastKvalue, 64, k * sizeof(double));
 
     //initialize data set 
-    for (int i = 0; i != x_size * k; ++i){
+    for (int i = 0; i != x_size * dim; ++i){
       x[i] = ((double) rand())/ ((double) RAND_MAX);
-      //printf("%lf,",x[i]);
-      if(i==x_size-1){
-        //printf("y:\n");
-      }
-    }
-    //printf("\n a: \n");
-    //initialize test points
-    for (int i = 0; i != a_size * k; ++i){
-      a[i] = ((double) rand())/ ((double) RAND_MAX);
-      //printf("%lf\t",a[i]);
-    }
-   // printf("\n");
-    //initialize r 
-    for (int i = 0; i != a_size * x_size; ++i){
-      r[i] = 0;//((double) rand())/ ((double) RAND_MAX);
     }
 
-   // printf("l : \n");
+    //initialize test points
+    for (int i = 0; i != a_size * dim; ++i){
+      a[i] = ((double) rand())/ ((double) RAND_MAX);
+    }
+
+    //initialize r 
+    for (int i = 0; i != a_size * x_size; ++i){
+      r[i] = 0;
+    }
+
     //initialize l
     for (int i = 0; i != x_size; ++i){
       double temp  = ((double) rand())/ ((double) RAND_MAX);
@@ -84,49 +79,33 @@ int main(){
       l[i] = 0;
     else
       l[i] = 1; 
-     // printf("%d\t",l[i]);
     }
-   // printf("\n");
   
     //initialize test_l 
     for (int i = 0; i != a_size; ++i){
       test_l[i] = 0;
     }
 
-
     // KNN implementation
     int sum = 0;       // count cycles consuming
-    for (int runs = 0; runs != RUNS; ++runs){
-      int t0 = rdtsc();
-      int itt = 0;
-      for (int j = 0; j != a_size*k; j+=k){
-        for (int i = 0; i != x_size*k; i+=kernel_size*k){	
-            //printf("i=%d j=%d itt=%d k=%d \n",i,j,itt*kernel_size,k);
-            kernel(x+i, a+j, r + itt*kernel_size, k);
-            itt++;    
-        }
+    int t0 = rdtsc();
+    int itt = 0;
+    for (int j = 0; j != a_size*dim; j+=dim){
+      for (int i = 0; i != x_size*dim; i+=kernel_size*dim){	
+          kernel(x+i, a+j, r + itt*kernel_size, dim,k,leastKvalue);
+          itt++;    
       }
-      
-      // double sumr = 0;
-      // for(int m=0;m<28;m++){
-      //   sumr += r[m];
-      // }
-      // printf("%lf",sumr);
-      
-      int t1 = rdtsc();
-      sum += (t1 - t0);
     }
-    
-    int correct = 1;
-    // for (int i = 0; i != m * n; ++i)
-    //   correct &= (fabs(c[i] - c_check[i]) < 1e-12);
-    printf("cycles consuming %lf\t%d, dimenssion: %d\n", (a_size*x_size*3*k)/((double)(sum/(1.0*RUNS))), correct, k);
+    // solution here 
+    int t1 = rdtsc();
+    sum += (t1 - t0);
+  
+    printf("cycles consuming %lf\t, dimenssion: %d\n", (a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
     
     free(x);
     free(a);
     free(r);
   }
 
-  
   return 0;
 }

@@ -5,7 +5,9 @@ void inline kernel(
     double* a,    //test point
     double* r,
 
-    int D    // dimension size  
+    int D,    // dimension size
+    int k,
+    int leastk  
 ){
 
     __m256d smd8 = _mm256_setzero_pd();
@@ -16,11 +18,12 @@ void inline kernel(
     __m256d smd13 = _mm256_setzero_pd();
     __m256d smd14 = _mm256_setzero_pd();
 
+  
+
     for(int i=0; i < D; ++i){
         // load data
-		__m256d smd0 = _mm256_broadcast_sd(a + i);
-
-
+        __m256d smd0 = _mm256_broadcast_sd(a + i);
+     
         __m256d smd1 = _mm256_loadu_pd(x + i*28);
 		smd1 = _mm256_sub_pd(smd0, smd1);
 		smd8 = _mm256_fmadd_pd(smd1, smd1, smd8);
@@ -48,33 +51,6 @@ void inline kernel(
         __m256d smd7 = _mm256_loadu_pd(x+24+ i*28);
 		smd7 = _mm256_sub_pd(smd0, smd7);
 		smd14 = _mm256_fmadd_pd(smd7, smd7, smd14);
-
-        
-
-        // __m256d smd8 = _mm256_loadu_pd(r);
-        // __m256d smd9 = _mm256_loadu_pd(r+4);
-        // __m256d smd10 = _mm256_loadu_pd(r+8);
-        // __m256d smd11 = _mm256_loadu_pd(r+12);
-        // __m256d smd12 = _mm256_loadu_pd(r+16);
-        // __m256d smd13 = _mm256_loadu_pd(r+20);
-        // __m256d smd14 = _mm256_loadu_pd(r+24);
-
-
-        // subtraction part
-        
-        
-        
-        
-        
-        
-
-        // fma part
-        
-        
-        
-        
-        
-        
         
     }
 
