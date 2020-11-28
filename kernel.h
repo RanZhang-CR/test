@@ -5,9 +5,7 @@ void inline kernel(
     double* a,    //test point
     double* r,
 
-    int D,    // dimension size
-    int k,
-    int leastk  
+    int D    // dimension size
 ){
 
     __m256d smd8 = _mm256_setzero_pd();
