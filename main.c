@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include "immintrin.h"
-
+#include <omp.h>
 #include "kernel.h"
 
 #define RUNS 2000
@@ -37,7 +37,7 @@ int main(){
   
   int starting_dimension = 1;  //  benchmark performance for 2D
   int ending_dimension  =  10;  //  benchmark performance for 5D
-
+ // int dim = 2;
   int kernel_size  = 28 ;
 
   int k = 3;  
@@ -52,7 +52,7 @@ int main(){
 
     posix_memalign((void**) &x, 64, x_size * dim * sizeof(double));
     posix_memalign((void**) &a, 64, a_size * dim * sizeof(double));
-    posix_memalign((void**) &r, 64, x_size * sizeof(double));
+   // posix_memalign((void**) &r, 64, x_size * sizeof(double));
     posix_memalign((void**) &l, 64, x_size * sizeof(bool));
     posix_memalign((void**) &test_l, 64, a_size * sizeof(bool));
 
@@ -68,10 +68,10 @@ int main(){
     }
 
     //initialize r 
-    for (int i = 0; i != x_size; ++i){
+   /* for (int i = 0; i != x_size; ++i){
       r[i] = 0;
     }
-
+*/
     //initialize l
     for (int i = 0; i != x_size; ++i){
       double temp  = ((double) rand())/ ((double) RAND_MAX);
@@ -90,14 +90,28 @@ int main(){
     // KNN implementation
     int sum = 0;       // count cycles consuming
     int t0 = rdtsc();
+   // int itt = 0;
+   // int temp1,temp2;
+   // int zero_count, one_count;
+    //loop for each test point
+   // printf("entering parallel");
+   // fflush(0);
+    #pragma omp parallel for
+    for (int j = 0; j < a_size*dim; j+=dim){
+     // itt = 0;
     int itt = 0;
+    int itter = 0;
     int temp1,temp2;
     int zero_count, one_count;
-    //loop for each test point
-    for (int j = 0; j != a_size*dim; j+=dim){
-      itt = 0;
+    double least_k[k];
+    posix_memalign((void**) &least_k, 64, k * sizeof(bool));
+    double *r;
+    posix_memalign((void**) &r, 64, x_size * sizeof(double)); 
+    for (int i = 0; i != x_size; ++i){
+      r[i] = 0;
+    }
       //loop for each point in the dataset
-      for (int i = 0; i != x_size*dim; i+=kernel_size*dim){	
+      for (int i = 0; i < x_size*dim; i+=kernel_size*dim){	
           kernel(x+i, a+j, r + itt*kernel_size, dim);
           itt++;
       }
@@ -115,20 +129,21 @@ int main(){
         r[sort_x] = r[pos];
         r[pos] = temp1;
 
-        temp2 = l[sort_x];
-        l[sort_x] = l[pos];
-        l[pos] = temp2; 
+       least_k[itter] = l[pos];
+       itter++;
       }
     // majority vote
       one_count = 0;
       zero_count = 0;
-      for (int t = 0; t != k; ++t)
-          if(l[t] == 0)
-		zero_count++;
-	  else
-		one_count++;  
-      test_l[j/dim] = (one_count > zero_count) ? one_count : zero_count;
-    }
+      for (int t = 0; t < k; ++t)
+         // if(least_k[t] == 0)
+		zero_count+=(least_k[t] == 0);
+//	  else
+//		one_count++;  
+      test_l[j/dim] = (zero_count > k/2) ? false : true;
+    free(r);   
+ }
+    
     // solution here 
     int t1 = rdtsc();
     sum += (t1 - t0);
@@ -137,7 +152,7 @@ int main(){
     
     free(x);
     free(a);
-    free(r);
+ //   free(r);
   }
 
   return 0;
