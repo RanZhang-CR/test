@@ -31,7 +31,7 @@ int main(){
 
 
   // r[i] is the distance between one training point ans one test point
-  double *r;
+  // double *rr;
 
   //double *c, *c_check;
   
@@ -46,13 +46,19 @@ int main(){
   
   int x_jump_size  = 28;  //x_jump_size is the number need to be jumped each time when calling kernel
 
- 
+  //int p = 40;                               // total number of threads possible
+  //int total_thread_used = min(a_size, p);   // total number of threads used
+
+  FILE *fl, *fd, *ft;
+  fl = fopen("labels.txt","w");
+  fd = fopen("datasets.txt","w");
+  ft = fopen("testsets.txt","w");
   
   for (int dim = starting_dimension ; dim <= ending_dimension ;dim++){
 
     posix_memalign((void**) &x, 64, x_size * dim * sizeof(double));
     posix_memalign((void**) &a, 64, a_size * dim * sizeof(double));
-   // posix_memalign((void**) &r, 64, x_size * sizeof(double));
+    // posix_memalign((void**) &rr, 64, x_size * sizeof(double) * total_thread_used);     
     posix_memalign((void**) &l, 64, x_size * sizeof(bool));
     posix_memalign((void**) &test_l, 64, a_size * sizeof(bool));
 
@@ -60,11 +66,13 @@ int main(){
 
     for (int i = 0; i != x_size * dim; ++i){
       x[i] = ((double) rand())/ ((double) RAND_MAX);
+      fprintf(fd,"%d,",x[i]);
     }
     
     //initialize test points
     for (int i = 0; i != a_size * dim; ++i){
       a[i] = ((double) rand())/ ((double) RAND_MAX);
+      fprintf(ft,"%d,",a[i]);
     }
 
     //initialize r 
@@ -79,8 +87,10 @@ int main(){
       l[i] = 0;
     else
       l[i] = 1; 
-    }
 
+      // write the labels into "labels.txt"
+      fprintf(fl,"%d,",l[i]);
+    }
     
     //initialize test_l 
     for (int i = 0; i != a_size; ++i){
@@ -96,20 +106,24 @@ int main(){
     //loop for each test point
    // printf("entering parallel");
    // fflush(0);
-    #pragma omp parallel for
+
+    #pragma omp parallel for num_threads(12)
     for (int j = 0; j < a_size*dim; j+=dim){
-     // itt = 0;
     int itt = 0;
-    int itter = 0;
     int temp1,temp2;
     int zero_count, one_count;
     double least_k[k];
-    posix_memalign((void**) &least_k, 64, k * sizeof(bool));
+    // posix_memalign((void**) &least_k, 64, k * sizeof(bool));
+    int id = omp_get_thread_num();
+    // double *r = rr + id * x_size;      
     double *r;
     posix_memalign((void**) &r, 64, x_size * sizeof(double)); 
+
     for (int i = 0; i != x_size; ++i){
       r[i] = 0;
     }
+
+      // get Euclidiant distance for each point 
       //loop for each point in the dataset
       for (int i = 0; i < x_size*dim; i+=kernel_size*dim){	
           kernel(x+i, a+j, r + itt*kernel_size, dim);
@@ -119,7 +133,7 @@ int main(){
       // selection sort 
       for(int sort_x = 0; sort_x < k; sort_x++){
         int min = r[sort_x];
-	int pos = sort_x;
+	      int pos = sort_x;
         for(int sort_y = sort_x+1; sort_y < x_size; sort_y++)
              if(min > r[sort_y]){
                  min = r[sort_y];
@@ -129,17 +143,13 @@ int main(){
         r[sort_x] = r[pos];
         r[pos] = temp1;
 
-       least_k[itter] = l[pos];
-       itter++;
+       least_k[sort_x] = l[pos];
       }
     // majority vote
-      one_count = 0;
       zero_count = 0;
       for (int t = 0; t < k; ++t)
          // if(least_k[t] == 0)
-		zero_count+=(least_k[t] == 0);
-//	  else
-//		one_count++;  
+		    zero_count+=(least_k[t] == 0);
       test_l[j/dim] = (zero_count > k/2) ? false : true;
     free(r);   
  }
