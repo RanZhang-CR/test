@@ -66,13 +66,13 @@ int main(){
 
     for (int i = 0; i != x_size * dim; ++i){
       x[i] = ((double) rand())/ ((double) RAND_MAX);
-      fprintf(fd,"%d,",x[i]);
+      fprintf(fd,"%f,",x[i]);
     }
     
     //initialize test points
     for (int i = 0; i != a_size * dim; ++i){
       a[i] = ((double) rand())/ ((double) RAND_MAX);
-      fprintf(ft,"%d,",a[i]);
+      fprintf(ft,"%f,",a[i]);
     }
 
     //initialize r 
