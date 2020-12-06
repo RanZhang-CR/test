@@ -6,7 +6,7 @@
 #include <omp.h>
 #include "kernel.h"
 
-#define RUNS 2000
+#define RUNS 20000
 
 //timing routine for reading the time stamp counter
 static __inline__ unsigned long long rdtsc(void) {
