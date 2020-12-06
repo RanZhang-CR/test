@@ -158,7 +158,6 @@ for(int run=0;run<RUNS; run++){
         }
       }
 
-
     // majority vote
       zero_count = 0;
       for (int t = 0; t < k; ++t)
@@ -171,9 +170,17 @@ for(int run=0;run<RUNS; run++){
     // solution here 
     int t1 = rdtsc();
     sum += (t1 - t0);
-  
-    printf("cycles consuming %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
 
+    printf("instruction numbers for distance calculation %d\t, dimenssion: %d\n", a_size*x_size*3*dim, dim);
+    printf("instruction numbers for find k least elements %d\t, dimenssion: %d\n", k*a_size*x_size + a_size*x_size, dim);
+    printf("instruction numbers for label prediction %d\t, dimenssion: %d\n", (k-1)*a_size + a_size, dim);
+    int total_instruction_nums = (RUNS*a_size*x_size*3*dim) + RUNS*(k*a_size*x_size + a_size*x_size) + (RUNS*((k-1)*a_size + a_size));
+    printf("total instruction numbers %d\t, dimenssion: %d\n", total_instruction_nums/RUNS, dim);
+    printf("performance (instructions/clock cycle): %lf\t, dimenssion: %d\n", total_instruction_nums/((double)(sum/(1.0))), dim);
+
+    // printf("cycles consuming for distance calculation %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
+    // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*(k*a_size*x_size + a_size*x_size))/((double)(sum/(1.0))), dim);
+    // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*((k-1)*a_size + a_size))/((double)(sum/(1.0))), dim);
     for(int i = 0; i< a_size; i++){
       fprintf(fout,"%d\t",test_l[i]);      
     }
