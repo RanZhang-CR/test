@@ -159,11 +159,11 @@ for(int run=0;run<RUNS; run++){
       }
 
     // majority vote
-      zero_count = 0;
+      one_count = 0;
       for (int t = 0; t < k; ++t)
          // if(least_k[t] == 0)
-		    zero_count+=(least_k_label[t] == 0);
-      test_l[j/dim] = (zero_count > k/2) ? false : true;
+		    one_count+=least_k_label[t];
+      test_l[j/dim] = (one_count > k/2) ? true : false;
     // free(r);   
  }
 }
