@@ -35,7 +35,7 @@ int main(){
 
   //double *c, *c_check;
   
-  int starting_dimension = 1;  //  benchmark performance for 2D
+  int starting_dimension = 10;  //  benchmark performance for 2D
   int ending_dimension  =  10;  //  benchmark performance for 5D
  // int dim = 2;
   int kernel_size  = 28 ;
@@ -49,10 +49,11 @@ int main(){
   //int p = 40;                               // total number of threads possible
   //int total_thread_used = min(a_size, p);   // total number of threads used
 
-  FILE *fl, *fd, *ft;
+  FILE *fl, *fd, *ft, *fout;
   fl = fopen("labels.txt","w");
   fd = fopen("datasets.txt","w");
   ft = fopen("testsets.txt","w");
+  fout = fopen("outputlabel.txt","w");
   
   for (int dim = starting_dimension ; dim <= ending_dimension ;dim++){
 
@@ -66,13 +67,13 @@ int main(){
 
     for (int i = 0; i != x_size * dim; ++i){
       x[i] = ((double) rand())/ ((double) RAND_MAX);
-      fprintf(fd,"%f,",x[i]);
+      fprintf(fd,"%f\t",x[i]);
     }
     
     //initialize test points
     for (int i = 0; i != a_size * dim; ++i){
       a[i] = ((double) rand())/ ((double) RAND_MAX);
-      fprintf(ft,"%f,",a[i]);
+      fprintf(ft,"%f\t",a[i]);
     }
 
     //initialize r 
@@ -89,7 +90,7 @@ int main(){
       l[i] = 1; 
 
       // write the labels into "labels.txt"
-      fprintf(fl,"%d,",l[i]);
+      fprintf(fl,"%d\t",l[i]);
     }
     
     //initialize test_l 
@@ -107,12 +108,14 @@ int main(){
    // printf("entering parallel");
    // fflush(0);
 
-    #pragma omp parallel for num_threads(12)
+for(int run=0;run<RUNS; run++){
+    #pragma omp parallel for num_threads(10)
     for (int j = 0; j < a_size*dim; j+=dim){
     int itt = 0;
     int temp1,temp2;
     int zero_count, one_count;
-    double least_k[k];
+    double least_k_distance[k];
+    bool least_k_label[k];
     // posix_memalign((void**) &least_k, 64, k * sizeof(bool));
     int id = omp_get_thread_num();
     // double *r = rr + id * x_size;      
@@ -129,36 +132,51 @@ int main(){
           kernel(x+i, a+j, r + itt*kernel_size, dim);
           itt++;
       }
-      // find the least k values
-      // selection sort 
-      for(int sort_x = 0; sort_x < k; sort_x++){
-        int min = r[sort_x];
-	      int pos = sort_x;
-        for(int sort_y = sort_x+1; sort_y < x_size; sort_y++)
-             if(min > r[sort_y]){
-                 min = r[sort_y];
-                 pos = sort_y;
-              }
-        temp1 = r[sort_x];
-        r[sort_x] = r[pos];
-        r[pos] = temp1;
 
-       least_k[sort_x] = l[pos];
+      // find the least k values
+      for(int i = 0; i < x_size; i++){
+        // copy the first k elements
+        if(i<k){
+          least_k_distance[i] = r[i];
+          least_k_label[i] = l[i]; 
+        }
+        // begin from kth element, compare it with the elements in least_k_distances,
+        // if smaller than the maximum element in least_k_distances, replaces it
+        else{
+          int replace_index = -1;
+          double max_distance = r[i];
+          for(int j = 0; j<k; j++){
+            if(least_k_distance[j] > max_distance){
+              replace_index = j;
+              max_distance = least_k_distance[j];
+            }
+          }
+          if(replace_index > -1){
+            least_k_distance[replace_index] = r[i];
+            least_k_label[replace_index] = l[i];
+          }
+        }
       }
+
+
     // majority vote
       zero_count = 0;
       for (int t = 0; t < k; ++t)
          // if(least_k[t] == 0)
-		    zero_count+=(least_k[t] == 0);
+		    zero_count+=(least_k_label[t] == 0);
       test_l[j/dim] = (zero_count > k/2) ? false : true;
     free(r);   
  }
-    
+}
     // solution here 
     int t1 = rdtsc();
     sum += (t1 - t0);
   
-    printf("cycles consuming %lf\t, dimenssion: %d\n", (a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
+    printf("cycles consuming %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
+
+    for(int i = 0; i< a_size; i++){
+      fprintf(fout,"%d\t",test_l[i]);      
+    }
     
     free(x);
     free(a);
