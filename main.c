@@ -31,7 +31,7 @@ int main(){
 
 
   // r[i] is the distance between one training point ans one test point
-  // double *rr;
+  double *rr;
 
   //double *c, *c_check;
   
@@ -46,8 +46,8 @@ int main(){
   
   int x_jump_size  = 28;  //x_jump_size is the number need to be jumped each time when calling kernel
 
-  //int p = 40;                               // total number of threads possible
-  //int total_thread_used = min(a_size, p);   // total number of threads used
+  int p = 10;                               // total number of threads possible
+  int total_thread_used = (a_size > p) ? p : a_size;   // total number of threads used
 
   FILE *fl, *fd, *ft, *fout;
   fl = fopen("labels.txt","w");
@@ -59,7 +59,7 @@ int main(){
 
     posix_memalign((void**) &x, 64, x_size * dim * sizeof(double));
     posix_memalign((void**) &a, 64, a_size * dim * sizeof(double));
-    // posix_memalign((void**) &rr, 64, x_size * sizeof(double) * total_thread_used);     
+    posix_memalign((void**) &rr, 64, x_size * total_thread_used * sizeof(double));     
     posix_memalign((void**) &l, 64, x_size * sizeof(bool));
     posix_memalign((void**) &test_l, 64, a_size * sizeof(bool));
 
@@ -109,7 +109,7 @@ int main(){
    // fflush(0);
 
 for(int run=0;run<RUNS; run++){
-    #pragma omp parallel for num_threads(10)
+    #pragma omp parallel for num_threads(total_thread_used)
     for (int j = 0; j < a_size*dim; j+=dim){
     int itt = 0;
     int temp1,temp2;
@@ -118,9 +118,9 @@ for(int run=0;run<RUNS; run++){
     bool least_k_label[k];
     // posix_memalign((void**) &least_k, 64, k * sizeof(bool));
     int id = omp_get_thread_num();
-    // double *r = rr + id * x_size;      
-    double *r;
-    posix_memalign((void**) &r, 64, x_size * sizeof(double)); 
+    double *r = rr + id * x_size;      
+    // double *r = &rr[id * x_size];
+    // posix_memalign((void**) &r, 64, x_size * sizeof(double)); 
 
     for (int i = 0; i != x_size; ++i){
       r[i] = 0;
@@ -164,7 +164,7 @@ for(int run=0;run<RUNS; run++){
          // if(least_k[t] == 0)
 		    zero_count+=(least_k_label[t] == 0);
       test_l[j/dim] = (zero_count > k/2) ? false : true;
-    free(r);   
+    // free(r);   
  }
 }
     // solution here 
@@ -187,7 +187,7 @@ for(int run=0;run<RUNS; run++){
     
     free(x);
     free(a);
- //   free(r);
+   free(rr);
   }
 
   return 0;
