@@ -20,8 +20,10 @@ with open('FLIR_ADAS_1_3/train/thermal_annotations.json', mode='r', encoding='gb
             file_content_list[id] += tmp
 
 for n in range(len(file_list)):
-    with open("data/custom/labels"+file_list[n],mode='w',encoding='gbk') as w2:
-        w2.write(file_content_list[n])
+    if file_content_list[n] != "":
+        with open("data/custom/labels/"+file_list[n],mode='w',encoding='gbk') as w2:
+            w2.write(file_content_list[n])
+            print("data/custom/images/"+file_list[n][:-3] +"jpeg")
 
 
 file_list = []
@@ -44,6 +46,10 @@ with open('FLIR_ADAS_1_3/val/thermal_annotations.json', mode='r', encoding='gbk'
                     tmp += str(float(b['bbox'][j]/640)) + " "
             file_content_list[id] += tmp
 
+print("\n\n")
+
 for n in range(len(file_list)):
-    with open("data/custom/labels"+file_list[n],mode='w',encoding='gbk') as w2:
-        w2.write(file_content_list[n])
+    if file_content_list[n] != "":
+        with open("data/custom/labels/"+file_list[n],mode='w',encoding='gbk') as w2:
+            w2.write(file_content_list[n])
+            print("data/custom/images/"+file_list[n][:-3] +"jpeg")
