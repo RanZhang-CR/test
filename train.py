@@ -105,7 +105,7 @@ if __name__ == "__main__":
             tmp1 = torch.cat((imgs, imgs, imgs), dim=1)
             # tmp2 = torch.cat((tmp1, tmp1, tmp1), dim=1)
             # imgs = Variable(imgs.to(device))
-            imgs = Variable(tmp1.to(device))
+            imgs = Variable(imgs.to(device))
             targets = Variable(targets.to(device), requires_grad=False)
 
             loss, outputs = model(imgs, targets)
