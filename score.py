@@ -20,19 +20,19 @@ if __name__ == "__main__":
         new_dict = json.loads(X)
         for item in new_dict['annotations']:
             if item['category_id'] == 1:
-                target_labels[item['image_id']] += 1
-                # target_labels[item['image_id']] = 1
+                # target_labels[item['image_id']] += 1
+                target_labels[item['image_id']] = 1
         rj.close()
 
     with open("person_count.txt", "r") as rf:
         Y = rf.read().splitlines()
         for i in range(len(Y)):
             ele = Y[i].split("\t")
-            # predict_labels[i] = 1 if int(ele[1]) else 0
-            predict_labels[i] = int(ele[1])
+            predict_labels[i] = 1 if int(ele[1]) else 0
+            # predict_labels[i] = int(ele[1])
 
-    # f1_s = f1_score(target_labels, predict_labels, average='binary')
-    f1_s = f1_score(target_labels, predict_labels, average='micro')
+    f1_s = f1_score(target_labels, predict_labels, average='binary')
+    # f1_s = f1_score(target_labels, predict_labels, average='micro')
     print("f1 score")
     print(f1_s)
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     print("accuracy")
     print(acc_s)
 
-    recall = recall_score(target_labels, predict_labels, average='micro')
+    recall = recall_score(target_labels, predict_labels, average='binary')
     print("recall score")
     print(recall)
 
