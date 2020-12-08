@@ -1,5 +1,5 @@
-# PyTorch-YOLOv3
-A minimal PyTorch implementation of YOLOv3, with support for training, inference and evaluation.
+# Transfer learning for predestrain detection in thermometer image
+Transfer learning for predestrain detection in thermometer image based on PyTorch-YOLOv3 which pre-trained with coco dataset.
 
 ## Installation
 ##### Clone and install requirements
