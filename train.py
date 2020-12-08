@@ -74,6 +74,8 @@ if __name__ == "__main__":
         collate_fn=dataset.collate_fn,
     )
 
+
+
     optimizer = torch.optim.Adam(model.parameters())
 
     metrics = [
@@ -99,7 +101,11 @@ if __name__ == "__main__":
         for batch_i, (_, imgs, targets) in enumerate(dataloader):
             batches_done = len(dataloader) * epoch + batch_i
 
-            imgs = Variable(imgs.to(device))
+            # config for FLIR use
+            tmp1 = torch.cat((imgs, imgs, imgs), dim=1)
+            # tmp2 = torch.cat((tmp1, tmp1, tmp1), dim=1)
+            # imgs = Variable(imgs.to(device))
+            imgs = Variable(tmp1.to(device))
             targets = Variable(targets.to(device), requires_grad=False)
 
             loss, outputs = model(imgs, targets)

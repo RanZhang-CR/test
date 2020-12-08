@@ -74,9 +74,9 @@ if __name__ == "__main__":
         # preprocess the thermal image which is gray picture
         # initially just generally broadcast the 1 channel in gray to 3 channel in RGB
         # such that it can be applied on the YOLOv3 model which was trained on RGB COCO dataset
-        fimgs = torch.cat((input_imgs, input_imgs, input_imgs), dim=0)
-        timgs = torch.cat((fimgs, fimgs, fimgs), dim=1)
-        input_imgs = Variable(timgs.type(Tensor))
+        fimgs = torch.cat((input_imgs, input_imgs, input_imgs), dim=1)
+        # timgs = torch.cat((fimgs, fimgs, fimgs), dim=1)
+        input_imgs = Variable(fimgs.type(Tensor))
 
         # Get detections
         with torch.no_grad():
@@ -136,33 +136,34 @@ if __name__ == "__main__":
             bbox_colors = random.sample(colors, n_cls_preds)
             for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
 
-                print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
-                # print(int(cls_pred))
-
-                box_w = x2 - x1
-                box_h = y2 - y1
-
                 # cls_pred == 0 represent person
                 if int(cls_pred) == 0:
+
+                    print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
+                    # print(int(cls_pred))
+
+                    box_w = x2 - x1
+                    box_h = y2 - y1
+
                     person_count += 1
 
                     person_bbox = [x1, y1, box_w, box_h]
                     person_bbox_list.append(person_bbox)
 
-                color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
-                # Create a Rectangle patch
-                bbox = patches.Rectangle((x1, y1), box_w, box_h, linewidth=2, edgecolor=color, facecolor="none")
-                # Add the bbox to the plot
-                ax.add_patch(bbox)
-                # Add label
-                plt.text(
-                    x1,
-                    y1,
-                    s=classes[int(cls_pred)],
-                    color="white",
-                    verticalalignment="top",
-                    bbox={"color": color, "pad": 0},
-                )
+                    color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
+                    # Create a Rectangle patch
+                    bbox = patches.Rectangle((x1, y1), box_w, box_h, linewidth=2, edgecolor=color, facecolor="none")
+                    # Add the bbox to the plot
+                    ax.add_patch(bbox)
+                    # Add label
+                    plt.text(
+                        x1,
+                        y1,
+                        s=classes[int(cls_pred)],
+                        color="white",
+                        verticalalignment="top",
+                        bbox={"color": color, "pad": 0},
+                    )
 
         # Save generated image with detections
         plt.axis("off")
