@@ -95,7 +95,7 @@ int main(){
   double nt0 = omp_get_wtime();
 
   for(int run=0;run<RUNS; run++){
-    #pragma omp parallel for num_threads(total_thread_used)
+    // #pragma omp parallel for num_threads(total_thread_used)
     for (int j = 0; j < a_size*dim; j+=dim){
     int itt = 0;
     int temp1,temp2;
@@ -105,42 +105,42 @@ int main(){
     int id = omp_get_thread_num();
     double *r = rr + id * x_size;      
 
-    // for (int i = 0; i != x_size; ++i){
-    //   r[i] = 0;
-    // }
+    for (int i = 0; i != x_size; ++i){
+      r[i] = 0;
+    }
 
       // get Euclidiant distance for each point 
       //loop for each point in the dataset
       for (int i = 0; i < x_size*dim; i+=kernel_size*dim){	
           //////// call kenel to calculate distances ////////
-          // kernel(x+i, a+j, r + itt*kernel_size, dim);
-          // itt++;
+          kernel(x+i, a+j, r + itt*kernel_size, dim);
+          itt++;
           ////// end of call kenel to calculate distances////
 
-          /////////// find the least k values ///////////////////
-          for(int j=0; j < kernel_size; j++){
-            if (j + (i/dim) < k){
-              least_k_distance[j + (i/dim)] = r[j + (i/dim)];
-              least_k_label[j + (i/dim)] = l[j + (i/dim)];
-            } 
-            //begin from kth element, compare it with the elements in least_k_distances,
-            // if smaller than the maximum element in least_k_distances, replace it
-            else{
-              int replace_index = -1;
-              double max_distance = r[j + (i/dim)];
-              for(int j_i = 0; j_i<k; j_i++){
-                if(least_k_distance[j_i] > max_distance){
-                  replace_index = j_i;
-                  max_distance = least_k_distance[j_i];
-                }
-              }
-              if(replace_index > -1){
-                least_k_distance[replace_index] = r[j + (i/dim)];
-                least_k_label[replace_index] = l[j + (i/dim)];
-              }
-            }
-          }
-          //////////// end of find the least k values ////////////
+          // /////////// find the least k values ///////////////////
+          // for(int j=0; j < kernel_size; j++){
+          //   if (j + (i/dim) < k){
+          //     least_k_distance[j + (i/dim)] = r[j + (i/dim)];
+          //     least_k_label[j + (i/dim)] = l[j + (i/dim)];
+          //   } 
+          //   //begin from kth element, compare it with the elements in least_k_distances,
+          //   // if smaller than the maximum element in least_k_distances, replace it
+          //   else{
+          //     int replace_index = -1;
+          //     double max_distance = r[j + (i/dim)];
+          //     for(int j_i = 0; j_i<k; j_i++){
+          //       if(least_k_distance[j_i] > max_distance){
+          //         replace_index = j_i;
+          //         max_distance = least_k_distance[j_i];
+          //       }
+          //     }
+          //     if(replace_index > -1){
+          //       least_k_distance[replace_index] = r[j + (i/dim)];
+          //       least_k_label[replace_index] = l[j + (i/dim)];
+          //     }
+          //   }
+          // }
+          // //////////// end of find the least k values ////////////
       }
 
     // // majority vote
@@ -158,7 +158,7 @@ int main(){
     double tt = (nt1 - nt0)/RUNS;
     
     sum += (t1 - t0);
-    // printf("............................................................\n");
+    printf("............................................................\n");
     // printf("instruction numbers for distance calculation %d\t, dimension: %d \n", a_size*x_size*3*dim, dim);
     // printf("instruction numbers for find k least elements %d\t, dimension: %d \n", k*a_size*x_size + a_size*x_size, dim);
     // printf("instruction numbers for label prediction %d\t, dimension: %d \n", (k-1)*a_size + a_size, dim);
@@ -166,11 +166,11 @@ int main(){
     // printf("total instruction numbers %d\t, dimenssion: %d \n", total_instruction_nums/RUNS, dim);
     // printf("performance (instructions/clock cycle): %lf\t, dimension: %d \n", total_instruction_nums/((double)(sum/(1.0))), dim);
     // printf("time : %f\n",sum/(3.4*1000*1000*1000*RUNS));
-    // printf("cycles consuming for distance calculation %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
-    printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*(k*a_size*x_size + a_size*x_size))/((double)(sum/(1.0))), dim);
+    printf("cycles consuming for distance calculation %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
+    // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*(k*a_size*x_size + a_size*x_size))/((double)(sum/(1.0))), dim);
     // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*((k-1)*a_size + a_size))/((double)(sum/(1.0))), dim);
     printf("............................................................\n");
-    printf(" time cost: %lf\n", tt);
+    printf(" time cost: %lf", tt);
     for(int i = 0; i< a_size; i++){
       fprintf(fout,"%d\t",test_l[i]);      
     }   
