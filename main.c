@@ -36,13 +36,13 @@ int main(){
 
   int kernel_size  = 28 ;
 
-  int k = 5;  
-  int x_size = kernel_size * 8;      //number of data set points (arbitrary, can be changed)
+  int k = 5;        
+  int x_size = kernel_size * 100;      //number of data set points (arbitrary, can be changed)
   int a_size = 10;                   //number of test points (arbitrary, can be changed)
   
   int x_jump_size  = 28;  //x_jump_size is the number need to be jumped each time when calling kernel
 
-  int p = 10;                               // total number of threads possible
+  int p = 1;                               // total number of threads possible
   int total_thread_used = (a_size > p) ? p : a_size;   // total number of threads used
 
   //total_thread_used = 1; single thread
@@ -92,6 +92,7 @@ int main(){
     long sum = 0;       // count cycles consuming
     long t0 = rdtsc();
    
+  double nt0 = omp_get_wtime();
 
   for(int run=0;run<RUNS; run++){
     #pragma omp parallel for num_threads(total_thread_used)
@@ -111,34 +112,61 @@ int main(){
       // get Euclidiant distance for each point 
       //loop for each point in the dataset
       for (int i = 0; i < x_size*dim; i+=kernel_size*dim){	
+          //////// call kenel to calculate distances ////////
           kernel(x+i, a+j, r + itt*kernel_size, dim);
           itt++;
-      }
+          ////// end of call kenel to calculate distances////
 
-      // find the least k values
-      for(int i = 0; i < x_size; i++){
-        // copy the first k elements
-        if(i<k){
-          least_k_distance[i] = r[i];
-          least_k_label[i] = l[i]; 
-        }
-        // begin from kth element, compare it with the elements in least_k_distances,
-        // if smaller than the maximum element in least_k_distances, replaces it
-        else{
-          int replace_index = -1;
-          double max_distance = r[i];
-          for(int j_i = 0; j_i<k; j_i++){
-            if(least_k_distance[j_i] > max_distance){
-              replace_index = j_i;
-              max_distance = least_k_distance[j_i];
+          /////////// find the least k values ///////////////////
+          for(int j=0; j < kernel_size; j++){
+            if (j + (i/dim) < k){
+              least_k_distance[j + (i/dim)] = r[j + (i/dim)];
+              least_k_label[j + (i/dim)] = l[j + (i/dim)];
+            } 
+            //begin from kth element, compare it with the elements in least_k_distances,
+            // if smaller than the maximum element in least_k_distances, replace it
+            else{
+              int replace_index = -1;
+              double max_distance = r[j + (i/dim)];
+              for(int j_i = 0; j_i<k; j_i++){
+                if(least_k_distance[j_i] > max_distance){
+                  replace_index = j_i;
+                  max_distance = least_k_distance[j_i];
+                }
+              }
+              if(replace_index > -1){
+                least_k_distance[replace_index] = r[j + (i/dim)];
+                least_k_label[replace_index] = l[j + (i/dim)];
+              }
             }
           }
-          if(replace_index > -1){
-            least_k_distance[replace_index] = r[i];
-            least_k_label[replace_index] = l[i];
-          }
-        }
+          //////////// end of find the least k values ////////////
       }
+
+      // // find the least k values
+      // for(int i = 0; i < x_size; i++){
+      //   // copy the first k elements
+      //   if(i<k){
+      //     least_k_distance[i] = r[i];
+      //     least_k_label[i] = l[i]; 
+      //   }
+      //   // begin from kth element, compare it with the elements in least_k_distances,
+      //   // if smaller than the maximum element in least_k_distances, replaces it
+      //   else{
+      //     int replace_index = -1;
+      //     double max_distance = r[i];
+      //     for(int j_i = 0; j_i<k; j_i++){
+      //       if(least_k_distance[j_i] > max_distance){
+      //         replace_index = j_i;
+      //         max_distance = least_k_distance[j_i];
+      //       }
+      //     }
+      //     if(replace_index > -1){
+      //       least_k_distance[replace_index] = r[i];
+      //       least_k_label[replace_index] = l[i];
+      //     }
+      //   }
+      // }
 
     // majority vote
       one_count = 0;
@@ -150,6 +178,9 @@ int main(){
 }
     // solution here 
     long t1 = rdtsc();
+
+    double nt1 = omp_get_wtime();
+    double tt = (nt1 - nt0)/RUNS;
     
     sum += (t1 - t0);
     printf("............................................................\n");
@@ -164,6 +195,7 @@ int main(){
     // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*(k*a_size*x_size + a_size*x_size))/((double)(sum/(1.0))), dim);
     // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*((k-1)*a_size + a_size))/((double)(sum/(1.0))), dim);
     printf("............................................................\n");
+    printf(" time cost: %lf", tt);
     for(int i = 0; i< a_size; i++){
       fprintf(fout,"%d\t",test_l[i]);      
     }   
