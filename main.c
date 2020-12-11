@@ -5,6 +5,7 @@
 #include "immintrin.h"
 #include <omp.h>
 #include "kernel.h"
+#include <time.h>
 
 #define RUNS 20000
 
@@ -76,11 +77,11 @@ int main(){
       fprintf(ft,"%f\t",a[i]);
     }
 
-    //initialize r 
-   /* for (int i = 0; i != x_size; ++i){
-      r[i] = 0;
-    }
-*/
+    // //initialize r 
+    // for (int i = 0; i != x_size; ++i){
+    //   r[i] = 0;
+    // }
+
     //initialize l
     for (int i = 0; i != x_size; ++i){
       double temp  = ((double) rand())/ ((double) RAND_MAX);
@@ -101,6 +102,7 @@ int main(){
     // KNN implementation
     int sum = 0;       // count cycles consuming
     int t0 = rdtsc();
+   
    // int itt = 0;
    // int temp1,temp2;
    // int zero_count, one_count;
@@ -169,6 +171,7 @@ for(int run=0;run<RUNS; run++){
 }
     // solution here 
     int t1 = rdtsc();
+    
     sum += (t1 - t0);
 
     printf("instruction numbers for distance calculation %d\t, dimenssion: %d\n", a_size*x_size*3*dim, dim);
@@ -177,13 +180,14 @@ for(int run=0;run<RUNS; run++){
     int total_instruction_nums = (RUNS*a_size*x_size*3*dim) + RUNS*(k*a_size*x_size + a_size*x_size) + (RUNS*((k-1)*a_size + a_size));
     printf("total instruction numbers %d\t, dimenssion: %d\n", total_instruction_nums/RUNS, dim);
     printf("performance (instructions/clock cycle): %lf\t, dimenssion: %d\n", total_instruction_nums/((double)(sum/(1.0))), dim);
-
+    printf("time :/n %f",sum/(3.4*1024*1024*1024*20000));
     // printf("cycles consuming for distance calculation %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
     // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*(k*a_size*x_size + a_size*x_size))/((double)(sum/(1.0))), dim);
     // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*((k-1)*a_size + a_size))/((double)(sum/(1.0))), dim);
     for(int i = 0; i< a_size; i++){
       fprintf(fout,"%d\t",test_l[i]);      
     }
+    
     
     free(x);
     free(a);
