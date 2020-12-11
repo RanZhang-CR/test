@@ -165,12 +165,9 @@ int main(){
     long total_instruction_nums = (RUNS*a_size*x_size*3*dim) + RUNS*(k*a_size*x_size + a_size*x_size) + (RUNS*((k-1)*a_size + a_size));
     printf("total instruction numbers %d\t, dimenssion: %d \n", total_instruction_nums/RUNS, dim);
     printf("performance (instructions/clock cycle): %lf\t, dimension: %d \n", total_instruction_nums/((double)(sum/(1.0))), dim);
-    // printf("time : %f\n",sum/(3.4*1000*1000*1000*RUNS));
-    // printf("cycles consuming for distance calculation %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
-    // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*(k*a_size*x_size + a_size*x_size))/((double)(sum/(1.0))), dim);
-    // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*((k-1)*a_size + a_size))/((double)(sum/(1.0))), dim);
+    
     printf("............................................................\n");
-    printf(" time cost: %lf\n", tt);
+    printf("Time cost: %lf\n", tt);
     for(int i = 0; i< a_size; i++){
       fprintf(fout,"%d\t",test_l[i]);      
     }   
