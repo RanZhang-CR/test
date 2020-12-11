@@ -33,9 +33,6 @@ int main(){
 
   // r[i] is the distance between one training point ans one test point
   double *rr;
-  
-  int starting_dimension = 2;  //  benchmark performance for 2D
-  int ending_dimension  =  10;  //  benchmark performance for 10D
 
   int kernel_size  = 28 ;
 
@@ -50,17 +47,18 @@ int main(){
 
   //total_thread_used = 1; single thread
   FILE *fl, *fd, *ft, *fout;
-  for (int dim = starting_dimension ; dim <= ending_dimension ;dim++){
+  int dim =  10;
+ 
 
-    fl = fopen("labels.txt","w");
-    fd = fopen("datasets.txt","w");
-    ft = fopen("testsets.txt","w");
-    fout = fopen("outputlabel.txt","w");
-    posix_memalign((void**) &x, 64, x_size * dim * sizeof(double));
-    posix_memalign((void**) &a, 64, a_size * dim * sizeof(double));
-    posix_memalign((void**) &rr, 64, x_size * total_thread_used * sizeof(double));     
-    posix_memalign((void**) &l, 64, x_size * sizeof(bool));
-    posix_memalign((void**) &test_l, 64, a_size * sizeof(bool));
+  fl = fopen("labels.txt","w");
+  fd = fopen("datasets.txt","w");
+  ft = fopen("testsets.txt","w");
+  fout = fopen("outputlabel.txt","w");
+  posix_memalign((void**) &x, 64, x_size * dim * sizeof(double));
+  posix_memalign((void**) &a, 64, a_size * dim * sizeof(double));
+  posix_memalign((void**) &rr, 64, x_size * total_thread_used * sizeof(double));     
+  posix_memalign((void**) &l, 64, x_size * sizeof(bool));
+  posix_memalign((void**) &test_l, 64, a_size * sizeof(bool));
 
     //initialize data set 
 
@@ -129,10 +127,10 @@ int main(){
         else{
           int replace_index = -1;
           double max_distance = r[i];
-          for(int j = 0; j<k; j++){
-            if(least_k_distance[j] > max_distance){
-              replace_index = j;
-              max_distance = least_k_distance[j];
+          for(int j_i = 0; j_i<k; j_i++){
+            if(least_k_distance[j_i] > max_distance){
+              replace_index = j_i;
+              max_distance = least_k_distance[j_i];
             }
           }
           if(replace_index > -1){
@@ -173,7 +171,6 @@ int main(){
     free(x);
     free(a);
    free(rr);
-  }
 
   return 0;
 }
