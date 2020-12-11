@@ -143,31 +143,6 @@ int main(){
           //////////// end of find the least k values ////////////
       }
 
-      // // find the least k values
-      // for(int i = 0; i < x_size; i++){
-      //   // copy the first k elements
-      //   if(i<k){
-      //     least_k_distance[i] = r[i];
-      //     least_k_label[i] = l[i]; 
-      //   }
-      //   // begin from kth element, compare it with the elements in least_k_distances,
-      //   // if smaller than the maximum element in least_k_distances, replaces it
-      //   else{
-      //     int replace_index = -1;
-      //     double max_distance = r[i];
-      //     for(int j_i = 0; j_i<k; j_i++){
-      //       if(least_k_distance[j_i] > max_distance){
-      //         replace_index = j_i;
-      //         max_distance = least_k_distance[j_i];
-      //       }
-      //     }
-      //     if(replace_index > -1){
-      //       least_k_distance[replace_index] = r[i];
-      //       least_k_label[replace_index] = l[i];
-      //     }
-      //   }
-      // }
-
     // majority vote
       one_count = 0;
       for (int t = 0; t < k; ++t)
@@ -190,12 +165,12 @@ int main(){
     long total_instruction_nums = (RUNS*a_size*x_size*3*dim) + RUNS*(k*a_size*x_size + a_size*x_size) + (RUNS*((k-1)*a_size + a_size));
     printf("total instruction numbers %d\t, dimenssion: %d \n", total_instruction_nums/RUNS, dim);
     printf("performance (instructions/clock cycle): %lf\t, dimension: %d \n", total_instruction_nums/((double)(sum/(1.0))), dim);
-    printf("time : %f\n",sum/(3.4*1000*1000*1000*RUNS));
+    // printf("time : %f\n",sum/(3.4*1000*1000*1000*RUNS));
     // printf("cycles consuming for distance calculation %lf\t, dimenssion: %d\n", (RUNS*a_size*x_size*3*dim)/((double)(sum/(1.0))), dim);
     // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*(k*a_size*x_size + a_size*x_size))/((double)(sum/(1.0))), dim);
     // printf("cycles consuming for find k least elements %lf\t, dimenssion: %d\n", (RUNS*((k-1)*a_size + a_size))/((double)(sum/(1.0))), dim);
     printf("............................................................\n");
-    printf(" time cost: %lf", tt);
+    printf(" time cost: %lf\n", tt);
     for(int i = 0; i< a_size; i++){
       fprintf(fout,"%d\t",test_l[i]);      
     }   
