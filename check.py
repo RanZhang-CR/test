@@ -14,7 +14,7 @@ with open("labels.txt",'r') as f:
     l = f.readline().split()
     for i in l:
         y.append(int(i))
-# print(y)
+print(len(y))
 
 # load testsets
 t=[]
@@ -30,7 +30,7 @@ with open("testsets.txt",'r') as f:
             t.append(tmp)
         else:
             tmp.append(float(l[i]))
-
+print(len(t))
 # load datasets
 x=[]
 with open("datasets.txt",'r') as f:
@@ -45,17 +45,19 @@ with open("datasets.txt",'r') as f:
                 x.append(ele)
             tmp = [[] for i in range(KERNEL_SIZE)]
 
+print(len(x))
 # load our predictions
 our_prediction =[]
 with open("outputlabel.txt",'r') as f:
     our_prediction = f.readline().split()
     our_prediction = [int(element) for element in our_prediction]
-neigh = KNeighborsClassifier(n_neighbors=3)
+neigh = KNeighborsClassifier(n_neighbors=5)
 
+print(len(our_prediction))
 # print(x)
 neigh.fit(x,y)
 
-KNeighborsClassifier(n_neighbors=3)
+KNeighborsClassifier(n_neighbors=5)
 print("sklearn output:")
 print(neigh.predict(t))
 print("our prediction:")
