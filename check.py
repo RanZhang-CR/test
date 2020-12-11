@@ -1,6 +1,7 @@
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 import sys
+import time
 
 # X = [[0,3],[2,3],[5,6],[4,5],[3,4],[1,5],[6,7],[5,4]]
 # y=[]
@@ -62,3 +63,9 @@ print("sklearn output:")
 print(neigh.predict(t))
 print("our prediction:")
 print(our_prediction)
+
+start_time = time.time()
+for i in range(2000):
+    neigh.fit(x, y)
+    neigh.predict(t)
+print("--- %s seconds ---" % ((time.time() - start_time)/2000))
