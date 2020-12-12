@@ -7,7 +7,7 @@
 #include "kernel.h"
 #include <time.h>
 
-#define RUNS 1000
+#define RUNS 100
 
 //timing routine for reading the time stamp counter
 static __inline__ unsigned long long rdtsc(void) {
@@ -37,7 +37,7 @@ int main(){
   int kernel_size  = 28 ;
 
   int k = 5;        
-  int x_size = kernel_size * 100;      //number of data set points (arbitrary, can be changed)
+  int x_size = kernel_size * 800;      //number of data set points (arbitrary, can be changed)
   int a_size = 10;                   //number of test points (arbitrary, can be changed)
   
   int x_jump_size  = 28;  //x_jump_size is the number need to be jumped each time when calling kernel

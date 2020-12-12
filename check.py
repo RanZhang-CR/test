@@ -65,7 +65,7 @@ print("our prediction:")
 print(our_prediction)
 
 start_time = time.time()
-for i in range(100):
-    neigh.fit(x, y)
-    neigh.predict(t)
-print("--- %s seconds ---" % ((time.time() - start_time)/100))
+
+neigh.fit(x, y)
+neigh.predict(t)
+print("--- %s seconds ---" % (time.time() - start_time))

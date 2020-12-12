@@ -3,7 +3,7 @@ run:
 	./knn.x
 
 run_k1:
-	gcc -w -Wall -mavx2 -mfma -O2 main_kernel1_performance.c kernel.h -o knnk2.x -DN=22687 -DNUM_A=109410 -fopenmp -std=c99
+	gcc -w -Wall -mavx2 -mfma -O2 main_kernel1_performance.c kernel.h -o knnk1.x -DN=22687 -DNUM_A=109410 -fopenmp -std=c99
 	./knnk1.x
 
 run_k2:
@@ -14,7 +14,7 @@ run_k3:
 	gcc -w -Wall -mavx2 -mfma -O2 main_kernel3_performance.c kernel.h -o knnk3.x -DN=22687 -DNUM_A=109410 -fopenmp -std=c99
 	./knnk3.x
 
-cleanup:
+clean:
 	rm -rf *~
 	rm -rf *.x
 
