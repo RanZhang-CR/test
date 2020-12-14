@@ -78,6 +78,14 @@ $ python3 train.py --model_def config/yolov3-custom.cfg --data_config config/cus
 Add `--pretrained_weights weights/darknet53.conv.74` to train using a backend pretrained on ImageNet.
 
 
+#### To realize self-train
+Run the detection on unlabeled dataset, set threshold by "--conf_thres",
+it will then generate images with pseudo label.
+Then put those images under data/custom/images, their coresponding label file under data/custom/labels
+Then run the training process,
+then run detection, then training, and so on.
+
+
 ## Credit
 
 ### YOLOv3: An Incremental Improvement
