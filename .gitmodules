@@ -2,3 +2,15 @@
 	path = yolo
 	url = https://github.com/RanZhang-CR/PyTorch-YOLOv3.git
 	branch = master
+[submodule "fk"]
+	path = fk
+	url = https://github.com/RanZhang-CR/FastKNN.git
+	branch = master
+[submodule "749"]
+	path = 749
+	url = https://github.com/RanZhang-CR/18749.git
+	branch = master
+[submodule "bt"]
+	path = bt
+	url = https://github.com/RanZhang-CR/linux-bootcamp.git
+	branch = master
