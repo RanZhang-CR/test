@@ -10,14 +10,30 @@ with open('FLIR_ADAS_1_3/train/thermal_annotations.json', mode='r', encoding='gb
         if b['category_id'] == 1:
             id = b['image_id']
             tmp = "0 "
-            for j in range(len(b['bbox'])):
-                if j == 1:
-                    tmp += str(float(b['bbox'][j]/512)) + " "
-                elif j == 3:
-                    tmp += str(float(b['bbox'][j]/512)) +"\n"
-                else:
-                    tmp += str(float(b['bbox'][j]/640)) + " "
+
+            x = b['bbox'][0]/640
+            y = b['bbox'][1]/512
+            width = b['bbox'][2]/640
+            height = b['bbox'][3]/512
+
+            if x>1 or y>1:
+                print("error")
+
+            x_center = x + width/2
+            y_center = y + height/2
+
+            tmp += str(x_center) + " " +str(y_center) + " " + str(width) +" "+str(height)+"\n"
+
             file_content_list[id] += tmp
+
+            # for j in range(len(b['bbox'])):
+            #     if j == 1:
+            #         tmp += str(float(b['bbox'][j]/512)) + " "
+            #     elif j == 3:
+            #         tmp += str(float(b['bbox'][j]/512)) +"\n"
+            #     else:
+            #         tmp += str(float(b['bbox'][j]/640)) + " "
+            # file_content_list[id] += tmp
 
 
 train_list_map = []
