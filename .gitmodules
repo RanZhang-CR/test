@@ -1,0 +1,4 @@
+[submodule "yolo"]
+	path = yolo
+	url = https://github.com/RanZhang-CR/PyTorch-YOLOv3.git
+	branch = master
